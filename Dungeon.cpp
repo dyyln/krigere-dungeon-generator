@@ -54,31 +54,35 @@ void Dungeon::generate(){
     
     rooms.push_back(start);
     // Perform splits
-    for(int i = 0; i < 128; i++){
-        int id = rand() % rooms.size();
-        Room r = rooms[id];
-        if(r.w * r.h < 128 || r.w < 12 && r.h < 12)continue;
-        if(i % 2 == 0){
-            //Horizontal split
-            int split_pos = r.w / 4 + rand() % (r.w / 2);
-            r.w -= split_pos;
-            Room r2 = Room(r.x + r.w, r.y, split_pos, r.h);
-            rooms.push_back(r2);
-            rooms[id] = r;
-        }else{
-            // Vertical split
-            int split_pos = r.h / 4 + rand() % (r.h / 2);
-            r.h -= split_pos;
-            Room r2 = Room(r.x, r.y + r.h, r.w, split_pos);
-            rooms.push_back(r2);
-            rooms[id] = r;
-            
-            //r.h /= 2;
-            //Room r2 = Room(r.x, r.y + r.h, r.w, r.h);
-            //rooms.push_back(r2);
-            //rooms[id] = r;
+    for(int i = 0; i < 5; i++){
+        std::vector<Room> rooms_to_add;
+        for(int id = 0; id < rooms.size(); id++){
+            Room r = rooms[id];
+            if(r.w * r.h < 128 || r.w < 12 && r.h < 12)continue;
+            if(i % 2 == 0){
+                //Horizontal split
+                int split_pos = r.w / 4 + rand() % (r.w / 2);
+                r.w -= split_pos;
+                Room r2 = Room(r.x + r.w, r.y, split_pos, r.h);
+                rooms_to_add.push_back(r2);
+                rooms[id] = r;
+            }else{
+                // Vertical split
+                int split_pos = r.h / 4 + rand() % (r.h / 2);
+                r.h -= split_pos;
+                Room r2 = Room(r.x, r.y + r.h, r.w, split_pos);
+                rooms_to_add.push_back(r2);
+                rooms[id] = r;
+                
+                //r.h /= 2;
+                //Room r2 = Room(r.x, r.y + r.h, r.w, r.h);
+                //rooms.push_back(r2);
+                //rooms[id] = r;
+            }
         }
-        
+        for(int j = 0; j < rooms_to_add.size(); j++){
+            rooms.push_back(rooms_to_add[j]);
+        }
     }
     
     // Add the rooms to the tilemap
