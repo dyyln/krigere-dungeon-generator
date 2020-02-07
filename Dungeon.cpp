@@ -39,12 +39,12 @@ void Dungeon::generate(){
     
     // create a border for the dungeon
     for(int i = 0; i < width; i++){
-        tiles[i][0] = '#';
-        tiles[i][height - 1] = '#';
+        //tiles[i][0] = '#';
+        //tiles[i][height - 1] = '#';
     }
     for(int j = 0; j < height; j++){
-        tiles[0][j] = '#';
-        tiles[width - 1][j] = '#';
+        //tiles[0][j] = '#';
+        //tiles[width - 1][j] = '#';
     }
     
     std::vector<Room> rooms;
@@ -61,14 +61,14 @@ void Dungeon::generate(){
             if(r.w * r.h < 128 || r.w < 12 && r.h < 12)continue;
             if(i % 2 == 0){
                 //Horizontal split
-                int split_pos = r.w / 4 + rand() % (r.w / 2);
+                int split_pos = r.w / 2 + rand() % (r.w / 2) - r.w / 4;
                 r.w -= split_pos;
                 Room r2 = Room(r.x + r.w, r.y, split_pos, r.h);
                 rooms_to_add.push_back(r2);
                 rooms[id] = r;
             }else{
                 // Vertical split
-                int split_pos = r.h / 4 + rand() % (r.h / 2);
+                int split_pos = r.h / 2 + rand() % (r.h / 2) - r.h / 4;
                 r.h -= split_pos;
                 Room r2 = Room(r.x, r.y + r.h, r.w, split_pos);
                 rooms_to_add.push_back(r2);
@@ -88,10 +88,22 @@ void Dungeon::generate(){
     // Add the rooms to the tilemap
     for(int i = 0; i < rooms.size(); i++){
         Room r = rooms[i];
+        int xo = rand() % r.w;
+        int yo = rand() % r.h;
+        
+        if(r.w-xo < 4)xo = 0;
+        if(r.h-yo < 4)yo = 0;
+        
+        r.x += xo;
+        r.y += yo;
+        r.w -= xo;
+        r.h -= yo;
+        
         printf("Room %d : (%d , %d) %d x %d\n", i, r.x, r.y, r.w, r.h);
         for(int i = 0; i < r.w; i++){
             for(int j = 0; j < r.h; j++){
-                if(i == 0 || j == 0)tiles[r.x+i][r.y+j] = '#';
+                tiles[r.x+i][r.y+j] = '.';
+                if(i == 0 || j == 0 || i == r.w-1 || j == r.h-1)tiles[r.x+i][r.y+j] = '#';
             }
         }
     }
@@ -110,7 +122,7 @@ void Dungeon::print_dungeon(){
 int main(){
     
     printf("Creating dungeon\n");
-    Dungeon dungeon = Dungeon(50, 32);
+    Dungeon dungeon = Dungeon(64, 32);
     
     printf("Generating dungeon\n");
     dungeon.generate();
